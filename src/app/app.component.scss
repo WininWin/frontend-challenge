@@ -1,0 +1,15 @@
+.app-container {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas: 
+        ". location-selector ."
+    ;
+
+}
+
+app-location-selector {
+    grid-area: location-selector;
+}

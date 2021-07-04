@@ -1,0 +1,11 @@
+
+<app-location-search-input (onFocus)="onFocus()" (onBlur)="onBlur()"></app-location-search-input>
+<ng-container *ngIf="cities$ | async as cities">
+    <ng-container *ngIf="showList">
+
+        <app-location-item-list [cities]="cities">
+    
+        </app-location-item-list>
+    
+</ng-container>
+</ng-container>
