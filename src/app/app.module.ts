@@ -7,6 +7,7 @@ import { LocationSelectorComponent } from './location-selector/location-selector
 import { LocationItemListComponent } from './location-item-list/location-item-list.component';
 import { LocationItemComponent } from './location-item/location-item.component';
 import { LocationSearchInputComponent } from './location-search-input/location-search-input.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { LocationSearchInputComponent } from './location-search-input/location-s
   imports: [
     BrowserModule,
     HttpClientModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

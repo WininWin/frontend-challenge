@@ -9,6 +9,7 @@ import { ICityInfo } from '../location.type';
 export class LocationItemListComponent implements OnInit {
 
   @Input() cities: ICityInfo[] = [];
+  @Input() isLoading = false;
 
   constructor() { }
 

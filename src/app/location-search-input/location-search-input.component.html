@@ -1,6 +1,8 @@
 <div class="location-search-input">
     <input 
+        [(ngModel)]="searchInput"
         (focus)="inputFocused()"
         (blur)="inputBlurred()"
+        (ngModelChange)='changed(searchInput)'
         type="text">
 </div>

@@ -8,6 +8,7 @@ export interface IApiResponse {
       last: string;
     };
     filter?: string;
+    error?: string;
   };
   
   export interface ICityInfo {

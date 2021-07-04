@@ -1,6 +1,14 @@
 .location-item-list {
     width: 500px;
     height: 350px;
-    padding: 0;
     overflow: auto;
+    border: 1px solid grey;
+
+    ul {
+        padding: 0;
+    }
+}
+
+.loading-spinner {
+    text-align: center;
 }

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { map } from 'rxjs/operators';
 import { LocationService } from '../location.service';
 
 @Component({
@@ -12,24 +13,30 @@ export class LocationSelectorComponent implements OnInit {
     private locationService: LocationService,
   ) { }
 
-  public cities$ = this.locationService.getCities({
-    limit: 100,
-    offset: 100,
-  });
+  public apiResponse$ = this.locationService.citiesData$.pipe(
+    map((response) => {
+      return response;
+    })
+  );
 
-  public showList = false;
+  public showList = true;
 
   ngOnInit(): void {
-
+    this.locationService.serachCities();
   }
 
   onFocus() {
     this.showList = true;
-    console.log(this.showList);
   }
 
   onBlur() {
-    this.showList = false;
+    this.showList = true;
+  }
+
+  onSearch(event: {
+    searchInput: string
+  }) {
+    this.locationService.serachCities(event.searchInput);
   }
 
 }
