@@ -1,0 +1,8 @@
+<ul class="location-item-list">
+    <app-location-item 
+        *ngFor="let city of cities" 
+        [name]="city.name" 
+        [country]="city.country"
+        [subcountry]="city.subcountry">
+    </app-location-item>
+</ul>

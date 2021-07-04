@@ -1,14 +1,24 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import {HttpClientModule} from '@angular/common/http';
 
 import { AppComponent } from './app.component';
+import { LocationSelectorComponent } from './location-selector/location-selector.component';
+import { LocationItemListComponent } from './location-item-list/location-item-list.component';
+import { LocationItemComponent } from './location-item/location-item.component';
+import { LocationSearchInputComponent } from './location-search-input/location-search-input.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    LocationSelectorComponent,
+    LocationItemListComponent,
+    LocationItemComponent,
+    LocationSearchInputComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
