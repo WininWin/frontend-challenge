@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { IApiResponse, ICityInfo, IPreferredCitiesPatch, IPreferredCitiesResponse } from './location.type';
 import { map, take } from 'rxjs/operators';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +29,8 @@ export class LocationService {
 
   public cityPreferences$ = this.cityPreferences.asObservable();
 
+  private currentSubscription: Subscription | undefined;
+
   constructor(
     private httpClient: HttpClient, 
   ) { }
@@ -38,7 +40,13 @@ export class LocationService {
       data: [],
       loading: true,
     });
-    this.getCities({
+
+    // cancel pending request on new searchInput
+    if (this.currentSubscription) {
+      this.currentSubscription.unsubscribe();
+    }
+
+    this.currentSubscription = this.getCities({
       filter: searchInput,
       offset: this.offset,
       limit: this.limit,
