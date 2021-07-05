@@ -16,6 +16,7 @@ export interface IApiResponse {
     name: string;
     country: string;
     subcountry?: string;
+    isPreferred: boolean;
   };
 
   export interface IPreferredCitiesResponse {

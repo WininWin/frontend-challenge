@@ -1,12 +1,20 @@
 <div class="location-item-list">
     <ng-container  *ngIf="!isLoading; else loading">
         <ul>
-            <app-location-item 
-                *ngFor="let city of cities" 
-                [name]="city.name" 
-                [country]="city.country"
-                [subcountry]="city.subcountry">
-            </app-location-item>
+            <ng-container  *ngFor="let city of cities" >
+                <div class="location-item-container">
+                    <input 
+                        type="checkbox" 
+                        [(ngModel)]="city.isPreferred"
+                        (ngModelChange)="checked(city)"
+                        >
+                    <app-location-item 
+                        [name]="city.name" 
+                        [country]="city.country"
+                        [subcountry]="city.subcountry">
+                    </app-location-item>
+                </div>
+            </ng-container>
         </ul>
         <span *ngIf="cities.length === 0">No data found !</span>
     </ng-container>

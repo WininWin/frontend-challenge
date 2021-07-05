@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ICityInfo } from '../location.type';
 
 @Component({
@@ -11,10 +11,19 @@ export class LocationItemListComponent implements OnInit {
   @Input() cities: ICityInfo[] = [];
   @Input() isLoading = false;
 
+  @Output() onCheck: EventEmitter<any> = new EventEmitter();
+  
   constructor() { }
 
   ngOnInit(): void {
     console.log(this.cities);
+  }
+
+  checked(city: ICityInfo) {
+    console.log(city);
+    this.onCheck.emit({
+      city,
+    })
   }
 
 }

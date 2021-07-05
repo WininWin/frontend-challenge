@@ -1,8 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { IApiResponse, ICityInfo, IPreferredCitiesPatch, IPreferredCitiesResponse } from './location.type';
-import { map, take } from 'rxjs/operators';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { map, switchMap, take } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, forkJoin, Observable, of, Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -16,58 +16,158 @@ export class LocationService {
   private citiesData = new BehaviorSubject<{
     data: ICityInfo[],
     next?: string,
-    loading: boolean,
-    error?: string;
+    isLoading: boolean,
+    error?: string
   }>({
     data: [],
-    loading: false
+    isLoading: false
   });
 
   public citiesData$ = this.citiesData.asObservable();
 
-  private cityPreferences = new BehaviorSubject<number[]>([]);
+  private cityPreferences = new BehaviorSubject<{
+    data: ICityInfo[],
+    next?: string,
+    isLoading: boolean,
+    error?: string
+  }>({
+    data: [],
+    isLoading: false,
+  });
 
   public cityPreferences$ = this.cityPreferences.asObservable();
 
-  private currentSubscription: Subscription | undefined;
+  private currentCitiesSubscription: Subscription | undefined;
+  private currentPreferencesSubscription: Subscription | undefined;
 
   constructor(
     private httpClient: HttpClient, 
   ) { }
 
-  serachCities(searchInput: string = '') {
+  serachCities(options: {
+    searchInput: string,
+    updateError?: boolean
+  } = {
+    searchInput: ''
+  }) {
+
+    const currentPreferredCitiesState = this.cityPreferences.getValue();
+    const currentPreferredCities = currentPreferredCitiesState.data;
+
     this.citiesData.next({
       data: [],
-      loading: true,
+      isLoading: true,
     });
 
     // cancel pending request on new searchInput
-    if (this.currentSubscription) {
-      this.currentSubscription.unsubscribe();
+    if (this.currentCitiesSubscription) {
+      this.currentCitiesSubscription.unsubscribe();
     }
 
-    this.currentSubscription = this.getCities({
-      filter: searchInput,
-      offset: this.offset,
-      limit: this.limit,
-    }).pipe(
+    this.currentCitiesSubscription = 
+      combineLatest(
+      [
+      this.getCities({
+        filter: options.searchInput,
+        offset: this.offset,
+        limit: this.limit,
+      }),
+      options.updateError || currentPreferredCitiesState.isLoading || currentPreferredCitiesState.error 
+        ? this.getPreferencesCities() 
+        : of(currentPreferredCities.map((city) => city.geonameid))
+    ]).pipe(
       take(1)
     ).subscribe(
-      (response) => {
+      ([response, preferences]) => {
+        const updatePreferences = response.data.map((city) => {
+          return {
+            ...city,
+            isPreferred: preferences.includes(city.geonameid)
+          }
+        });
         this.citiesData.next({
-          data: response.data,
+          data: updatePreferences,
           next: response.links?.next,
-          loading: false,
+          isLoading: false,
+          error: undefined,
         });
       },
       (_error) => {
         this.citiesData.next({
           data: [],
-          loading: false,
+          isLoading: false,
           error: 'There is an error on server. Please try again.'
         });
       }
     )
+  }
+
+  getAllPreferredCities() {
+    const currentPreferredCitiesState = this.cityPreferences.getValue();
+    const currentPreferredCities = currentPreferredCitiesState.data;
+    this.cityPreferences.next({
+      data: currentPreferredCities,
+      isLoading: true,
+    });
+
+    // cancel pending request on new searchInput
+    if (this.currentPreferencesSubscription) {
+      this.currentPreferencesSubscription.unsubscribe();
+    }
+
+    this.currentPreferencesSubscription = this.getPreferencesCities().pipe(
+      switchMap((preferences) => {
+        const getDatas: Observable<ICityInfo>[] = [];
+        const currIds = currentPreferredCities.map((currCity) => currCity.geonameid);
+        preferences.map((id) => {
+          if (!currIds.includes(id)) {
+            getDatas.push(this.getCity(id));
+          }
+
+        });
+        return forkJoin(getDatas)
+      }),
+      take(1)
+    ).subscribe(
+      ([...data]) => {
+      this.cityPreferences.next({
+        data: currentPreferredCities.concat(data),
+        isLoading: false,
+        error: undefined,
+      });
+    },
+    (_error) => {
+      this.cityPreferences.next({
+        data: currentPreferredCities,
+        isLoading: false,
+        error: 'There is an error on server. Please try again.'
+      });
+    })
+  }
+
+  updatePreference(city: ICityInfo) {
+    const currentPreferredCitiesState = this.cityPreferences.getValue();
+    const currentPreferredCities = currentPreferredCitiesState.data;
+
+    if (!currentPreferredCitiesState.isLoading && !currentPreferredCitiesState.error) {
+      if (city.isPreferred) {
+        if (!currentPreferredCities.some((currentCity) => currentCity.geonameid === city.geonameid)) {
+          currentPreferredCities.push(city);
+        }
+        this.cityPreferences.next({
+          data: currentPreferredCities,
+          isLoading: false,
+        });
+      } else {
+        this.cityPreferences.next({
+          ...currentPreferredCitiesState,
+          data:currentPreferredCities.filter((currentCity) => currentCity.geonameid !== city.geonameid),
+          isLoading: false,
+        });
+      }
+    } else {
+      this.getAllPreferredCities();
+    }
   }
 
   getCities(options: {

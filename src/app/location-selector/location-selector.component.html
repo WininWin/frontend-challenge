@@ -1,11 +1,36 @@
 
+<div class="preferences-container" *ngIf=" cityPreferences$ | async as  cityPreferences">
+    <h3>Preferred Cities</h3>
+    <ng-container *ngIf="!cityPreferences.isLoading && updatingQueue.length === 0; else loading">
+        <span *ngFor="let city of cityPreferences.data">
+            {{ city.name }} ({{ city.subcountry && city.subcountry !== city.name ? city.subcountry : city.country }}) /
+        </span>
+        <span *ngIf="cityPreferences.error">
+            {{ cityPreferences.error }}
+        </span>
+    </ng-container>
+    <div *ngIf="updateFailError">
+        {{ updateFailError}}
+    </div>
+</div>
 <app-location-search-input (onFocus)="onFocus()" (onBlur)="onBlur()" (onSearch)="onSearch($event)"></app-location-search-input>
-<ng-container *ngIf="apiResponse$ | async as response;">
+<ng-container *ngIf="citiesData$ | async as response;">
         <ng-container *ngIf="showList && !response.error">
-            <app-location-item-list [isLoading]="response.loading" [cities]="response.data">
+            <app-location-item-list 
+                [isLoading]="response.isLoading" 
+                [cities]="response.data"
+                (onCheck)="onCheck($event)"
+            >
             </app-location-item-list>
         </ng-container>
         <span *ngIf="response.error">
             {{ response.error }}
         </span>
 </ng-container>
+
+
+<ng-template #loading>
+    <div class="loading-spinner">
+        <i class="fas fa-spinner fa-spin fa-2x"></i>
+    </div>
+</ng-template>
