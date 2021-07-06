@@ -10,20 +10,30 @@ export class LocationItemListComponent implements OnInit {
 
   @Input() cities: ICityInfo[] = [];
   @Input() isLoading = false;
+  @Input() searchInput?: string;
+
+  @Output() loadMoreData: EventEmitter<any> = new EventEmitter();
 
   @Output() onCheck: EventEmitter<any> = new EventEmitter();
   
   constructor() { }
 
   ngOnInit(): void {
-    console.log(this.cities);
+  }
+
+  clickCity(city: ICityInfo) {
+    city.isPreferred = !city.isPreferred;
+    this.checked(city);
   }
 
   checked(city: ICityInfo) {
-    console.log(city);
     this.onCheck.emit({
       city,
     })
+  }
+
+  scrolled() {
+    this.loadMoreData.emit();
   }
 
 }

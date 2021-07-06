@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import {HttpClientModule} from '@angular/common/http';
-
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { AppComponent } from './app.component';
 import { LocationSelectorComponent } from './location-selector/location-selector.component';
 import { LocationItemListComponent } from './location-item-list/location-item-list.component';
@@ -20,7 +20,8 @@ import { FormsModule } from '@angular/forms';
   imports: [
     BrowserModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    InfiniteScrollModule
   ],
   providers: [],
   bootstrap: [AppComponent]

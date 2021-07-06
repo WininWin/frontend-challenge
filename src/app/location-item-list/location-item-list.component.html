@@ -1,8 +1,14 @@
-<div class="location-item-list">
+<div class="location-item-list"
+infiniteScroll
+[infiniteScrollDistance]="2"
+[infiniteScrollThrottle]="50"
+[scrollWindow]="false"
+(scrolled)="scrolled()"
+>
     <ng-container  *ngIf="!isLoading; else loading">
         <ul>
             <ng-container  *ngFor="let city of cities" >
-                <div class="location-item-container">
+                <div class="location-item-container" (click)="clickCity(city)">
                     <input 
                         type="checkbox" 
                         [(ngModel)]="city.isPreferred"
@@ -11,7 +17,9 @@
                     <app-location-item 
                         [name]="city.name" 
                         [country]="city.country"
-                        [subcountry]="city.subcountry">
+                        [subcountry]="city.subcountry"
+                        [searchInput]="searchInput"
+                        >
                     </app-location-item>
                 </div>
             </ng-container>

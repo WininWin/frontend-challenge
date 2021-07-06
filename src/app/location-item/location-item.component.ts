@@ -11,9 +11,22 @@ export class LocationItemComponent implements OnInit {
   @Input() country: string = '';
   @Input() subcountry?: string;
 
+  @Input() searchInput?: string;
+
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  emboldenResult(target: string) {
+    let result = target;
+    if (this.searchInput) {
+      const replace = this.searchInput;
+      const regex = new RegExp(replace,"ig");
+      result = target.replace(regex, (match) => `<b>${match}</b>`);
+    }
+
+    return result;
   }
 
 }

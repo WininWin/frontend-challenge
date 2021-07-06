@@ -1,12 +1,11 @@
 <li class="location-item">
     <div class="item-container">
-        <div class="name">{{name}}</div>
+        <div class="name" [innerHTML]="emboldenResult(name)"></div>
         <div class="country">
-            <span class="subcountry" *ngIf="subcountry">
-                {{  subcountry }} - 
+            <span class="subcountry" [innerHTML]="emboldenResult(subcountry)" *ngIf="subcountry">
             </span>
-            <span>
-                {{ country }}
+            -
+            <span [innerHTML]="emboldenResult(country)">
             </span>
         </div>
 

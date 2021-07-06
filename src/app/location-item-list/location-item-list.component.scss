@@ -12,8 +12,14 @@
             border-bottom: 1px solid grey;
             padding: 10px 0;
             display: flex;
+
+            &:hover {
+                cursor: pointer;
+                background: lightgrey;
+            }
         }
     }
+
 }
 
 .loading-spinner {

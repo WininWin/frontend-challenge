@@ -33,14 +33,6 @@ export class LocationSelectorComponent implements OnInit {
     this.locationService.getAllPreferredCities();
   }
 
-  onFocus() {
-    this.showList = true;
-  }
-
-  onBlur() {
-    this.showList = true;
-  }
-
   onSearch(event: {
     searchInput: string
   }) {
@@ -75,6 +67,10 @@ export class LocationSelectorComponent implements OnInit {
       this.updateFailError = `Update ${city.name} (${city.subcountry && city.subcountry !== city.name ? city.subcountry : city.country}) Failed ! Try again later !`
     }
     );
+  }
+
+  loadMoreData() {
+    this.locationService.getNextPage();
   }
 
 }

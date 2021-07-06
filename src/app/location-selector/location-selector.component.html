@@ -5,6 +5,9 @@
         <span *ngFor="let city of cityPreferences.data">
             {{ city.name }} ({{ city.subcountry && city.subcountry !== city.name ? city.subcountry : city.country }}) /
         </span>
+        <span *ngIf="!cityPreferences.error && cityPreferences.data.length === 0">
+            No preferred cities. Select your favoritie cities. 
+        </span>
         <span *ngIf="cityPreferences.error">
             {{ cityPreferences.error }}
         </span>
@@ -13,12 +16,14 @@
         {{ updateFailError}}
     </div>
 </div>
-<app-location-search-input (onFocus)="onFocus()" (onBlur)="onBlur()" (onSearch)="onSearch($event)"></app-location-search-input>
+<app-location-search-input (onSearch)="onSearch($event)"></app-location-search-input>
 <ng-container *ngIf="citiesData$ | async as response;">
         <ng-container *ngIf="showList && !response.error">
             <app-location-item-list 
                 [isLoading]="response.isLoading" 
                 [cities]="response.data"
+                [searchInput]="currnetSearchInput"
+                (loadMoreData)="loadMoreData()"
                 (onCheck)="onCheck($event)"
             >
             </app-location-item-list>

@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { IApiResponse, ICityInfo, IPreferredCitiesPatch, IPreferredCitiesResponse } from './location.type';
-import { map, switchMap, take } from 'rxjs/operators';
+import { defaultIfEmpty, map, switchMap, take } from 'rxjs/operators';
 import { BehaviorSubject, combineLatest, forkJoin, Observable, of, Subscription } from 'rxjs';
 
 @Injectable({
@@ -123,9 +123,10 @@ export class LocationService {
           if (!currIds.includes(id)) {
             getDatas.push(this.getCity(id));
           }
-
         });
-        return forkJoin(getDatas)
+        return forkJoin(getDatas).pipe(
+          defaultIfEmpty([] as ICityInfo[]),
+        )
       }),
       take(1)
     ).subscribe(
@@ -168,6 +169,34 @@ export class LocationService {
     } else {
       this.getAllPreferredCities();
     }
+  }
+
+  getNextPage() {
+    const currentCitiesData = this.citiesData.getValue(); 
+
+    if (currentCitiesData.next) {
+      this.httpClient.get<IApiResponse>(currentCitiesData.next)
+        .subscribe(
+          (response) => {
+            this.citiesData.next({
+              data: currentCitiesData.data.concat(response.data),
+              next: response.links?.next,
+              isLoading: false,
+              error: undefined,
+            });
+          },
+          (_error) => {
+            this.citiesData.next({
+              data: currentCitiesData.data,
+              next: currentCitiesData?.next,
+              isLoading: false,
+              error: undefined,
+            });
+          }
+        )
+
+    }
+
   }
 
   getCities(options: {

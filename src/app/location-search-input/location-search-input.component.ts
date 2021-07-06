@@ -11,9 +11,6 @@ export class LocationSearchInputComponent implements OnInit, AfterViewInit {
 
   searchInput: string = '';
 
-  @Output() onFocus: EventEmitter<any> = new EventEmitter();
-  @Output() onBlur: EventEmitter<any> = new EventEmitter();
-
   @Output() onSearch: EventEmitter<any> = new EventEmitter();
 
   searchInputChanged: Subject<string> = new Subject<string>();
@@ -33,14 +30,6 @@ export class LocationSearchInputComponent implements OnInit, AfterViewInit {
         this.search(value)
       } 
     )
-  }
-
-  inputFocused() {
-    this.onFocus.emit();
-  }
-
-  inputBlurred() {
-    this.onBlur.emit();
   }
 
   changed(searchInput: string) {
